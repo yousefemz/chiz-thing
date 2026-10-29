@@ -39,6 +39,7 @@
   --alt: #7b3e95;
   --danger: #ec1f24;
   --danger-edge: #a5121a;
+  --danger-deep: #d91a1f; /* brand red one step deeper, for AA text on red */
   --stage: #244085;
   --stage-2: #2f4f9e;
   --orange: #f7931e;
@@ -69,6 +70,7 @@
 html {
   scroll-behavior: smooth;
   scroll-padding-top: 92px;
+  scrollbar-gutter: stable;
   -webkit-text-size-adjust: 100%;
 }
 
@@ -121,6 +123,10 @@ input {
   clip: rect(0 0 0 0);
   white-space: nowrap;
   border: 0;
+}
+
+[hidden] {
+  display: none !important;
 }
 
 .skip-link {
@@ -284,6 +290,16 @@ input {
 .cart-count[data-empty="true"] {
   background: var(--paper-2);
   color: var(--muted);
+}
+
+.cart-count.is-bump {
+  animation: count-bump 0.35s ease;
+}
+
+@keyframes count-bump {
+  50% {
+    transform: scale(1.3) rotate(-8deg);
+  }
 }
 
 /* --------------------------------------------------------------------------
@@ -500,6 +516,7 @@ input {
 .marquee-track {
   display: flex;
   width: max-content;
+  direction: ltr;
   animation: marquee 30s linear infinite;
 }
 
@@ -873,7 +890,7 @@ input {
   max-width: 820px;
   margin-inline: auto;
   padding: clamp(30px, 4.4vw, 52px);
-  background: var(--danger);
+  background: var(--danger-deep);
   border: var(--w) solid var(--ink);
   border-radius: 18px;
   box-shadow: 8px 8px 0 var(--ink);
@@ -897,9 +914,9 @@ input {
 .order-card > p {
   max-width: 58ch;
   margin: 14px auto 0;
-  font-size: 14.5px;
+  font-size: 15px;
   line-height: 2;
-  color: #ffe9e9;
+  color: var(--paper);
 }
 
 .order-actions {
@@ -1001,13 +1018,14 @@ input {
 .cart {
   position: fixed;
   inset-block: 0;
-  inset-inline-start: 0;
+  left: 0;
+  right: auto;
   z-index: 70;
   display: flex;
   flex-direction: column;
   width: min(400px, 92vw);
   background: var(--paper);
-  border-inline-end: 4px solid var(--ink);
+  border-right: 4px solid var(--ink);
   box-shadow: 10px 0 0 rgba(46, 46, 51, 0.35);
   transform: translateX(-105%);
   transition: transform 0.26s cubic-bezier(0.2, 0.8, 0.2, 1);
@@ -1095,6 +1113,10 @@ input {
   align-items: start;
   padding: 14px 0;
   border-block-end: 2px dashed var(--line);
+}
+
+.cart-info {
+  min-width: 0;
 }
 
 .cart-thumb {
@@ -1273,15 +1295,21 @@ input {
    Scroll reveal
    -------------------------------------------------------------------------- */
 
-.reveal {
-  opacity: 0;
-  translate: 0 18px;
-  transition: opacity 0.5s ease, translate 0.5s ease;
+/* Progressive enhancement: content is visible by default; the observer only
+   adds the entrance animation. If JS or IO never runs, nothing disappears. */
+.reveal.is-in {
+  animation: rise 0.55s ease both;
 }
 
-.reveal.is-in {
-  opacity: 1;
-  translate: 0 0;
+@keyframes rise {
+  from {
+    opacity: 0;
+    translate: 0 18px;
+  }
+  to {
+    opacity: 1;
+    translate: 0 0;
+  }
 }
 
 /* --------------------------------------------------------------------------
@@ -1295,10 +1323,6 @@ input {
 
   .story-card {
     grid-template-columns: 1fr;
-  }
-
-  .story-art {
-    order: -1;
   }
 
   .workshop {
@@ -1421,7 +1445,7 @@ input {
 
   .cart {
     width: 100vw;
-    border-inline-end: 0;
+    border-right: 0;
   }
 }
 

@@ -97,14 +97,16 @@
 
   function closeCart() {
     drawer.classList.remove("is-open");
-    drawer.setAttribute("aria-hidden", "true");
+    const target =
+      lastFocus && lastFocus.isConnected && !drawer.contains(lastFocus)
+        ? lastFocus
+        : cartBtn;
+    target.focus({ preventScroll: true });
     drawer.setAttribute("inert", "");
+    drawer.setAttribute("aria-hidden", "true");
     scrim.classList.remove("is-open");
     cartBtn.setAttribute("aria-expanded", "false");
     document.body.classList.remove("is-locked");
-    if (lastFocus && typeof lastFocus.focus === "function") {
-      lastFocus.focus({ preventScroll: true });
-    }
   }
 
   function isOpen() {
@@ -368,9 +370,11 @@
 
     if (event.key !== "Tab" || !isOpen()) return;
 
-    const focusable = drawer.querySelectorAll(
-      'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])'
-    );
+    const focusable = Array.from(
+      drawer.querySelectorAll(
+        'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])'
+      )
+    ).filter((node) => node.offsetParent !== null && !node.disabled);
     if (!focusable.length) return;
 
     const first = focusable[0];
@@ -400,9 +404,9 @@
       },
       { threshold: 0.08, rootMargin: "0px 0px -6% 0px" }
     );
-    reveals.forEach((item) => io.observe(item));
-  } else {
-    reveals.forEach((item) => item.classList.add("is-in"));
+    reveals.forEach((item) => {
+      io.observe(item);
+    });
   }
 
   render();
